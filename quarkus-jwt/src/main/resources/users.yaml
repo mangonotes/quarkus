@@ -1,0 +1,9 @@
+userList:
+  - id: Temp1
+    name: User 1
+    roles: Admin
+    password: password
+  - id: Temp2
+    name: User 2
+    roles: Checker
+    password: password
