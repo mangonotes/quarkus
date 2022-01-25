@@ -21,9 +21,9 @@ public class TodoService implements ITodoCommandService, ITodoQueryService {
 
     private final BaseRepository<Long, TodoEntity> todoRepository;
     private final ConvertServices convertServices;
+    private final Logger logger = LoggerFactory.getLogger(TodoService.class);
     @Inject
     TodoOrmHelper todoOrmHelper;
-    private final Logger logger = LoggerFactory.getLogger(TodoService.class);
 
     @Inject
     public TodoService(BaseRepository<Long, TodoEntity> todoRepository, ConvertServices convertServices) {
@@ -36,24 +36,29 @@ public class TodoService implements ITodoCommandService, ITodoQueryService {
     public TodoResDTO create(TodoReqDTO reqDTO) {
         TodoEntity entityToSave = convertServices.convert(reqDTO);
         TodoEntity entitySaved = todoRepository.insertOrSave(entityToSave);
-        logger.info("saved {}", entitySaved.getId());
+        logger.info("created TODOEntity {}", entitySaved.getId());
         return convertServices.convert(entitySaved);
     }
 
     @Transactional
     @Override
-    public void update(TodoReqDTO todoReqDTO, Long id) {
-
+    public TodoResDTO update(TodoReqDTO todoReqDTO, Long id) {
+        TodoEntity entity = todoRepository.findById(id).orElseThrow(() -> new NotFoundException("Item not found " + id));
+        convertServices.convert(entity, todoReqDTO);
+        TodoEntity entitySaved = todoRepository.insertOrSave(entity);
+        return convertServices.convert(entitySaved);
     }
 
+    @Transactional
     @Override
     public void delete(Long id) {
-
+        TodoEntity entity = todoRepository.findById(id).orElseThrow(() -> new NotFoundException("Item not found " + id));
+        todoRepository.delete(entity);
     }
 
     @Override
     public List<TodoResDTO> getAll() {
-        logger.info("tod repository{}" + todoRepository);
+        logger.info("tod repository{}" , todoRepository);
         return todoRepository.queryAll("Select t from TodoEntity t JOIN FETCH t.tasks").stream()
                 .map(convertServices::convert)
                 .collect(Collectors.toList());
@@ -61,7 +66,7 @@ public class TodoService implements ITodoCommandService, ITodoQueryService {
 
     @Override
     public TodoResDTO findById(Long id) {
-        CriteriaQuery query = todoOrmHelper.createFindById(id);
+        CriteriaQuery<TodoEntity> query = todoOrmHelper.createFindById(id);
         Optional<TodoEntity> optionalTodo = todoRepository.query(query);
         optionalTodo.orElseThrow(() -> new NotFoundException("Not find for id " + id));
         return convertServices.convert(optionalTodo.get());

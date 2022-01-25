@@ -1,19 +1,21 @@
 package org.mangonotes.services.todo;
 
-import org.mangonotes.model.entity.TaskEntity;
 import org.mangonotes.model.entity.TodoEntity;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Root;
 
 @ApplicationScoped
 public class TodoOrmHelper {
     @Inject
     EntityManager entityManager;
 
-    public CriteriaQuery createFindById(Long id){
+    public CriteriaQuery<TodoEntity> createFindById(Long id) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<TodoEntity> query = cb.createQuery(TodoEntity.class);
@@ -22,7 +24,10 @@ public class TodoOrmHelper {
         query.where(cb.equal(employee.get("id"), id));
         query.select(employee)
                 .distinct(true);
-       //System.out.println( entityManager.createQuery(query).getSingleResult());
-        return  query;
+        return query;
+    }
+
+    public <T> void detach(T entity) {
+        entityManager.detach(entity);
     }
 }

@@ -6,7 +6,6 @@ import javax.validation.constraints.NotNull;
 public class TodoBaseDTO {
     @NotBlank(message="Name should not be blank")
     private String name;
-    @NotBlank(message="Description should not be blank")
     private String description;
 
     public String getName() {
@@ -19,6 +18,14 @@ public class TodoBaseDTO {
 
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    public String toString() {
+        return "TodoBaseDTO{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                '}';
     }
 
     public void setDescription(String description) {

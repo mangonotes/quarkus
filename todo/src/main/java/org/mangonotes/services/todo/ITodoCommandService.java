@@ -5,6 +5,6 @@ import org.mangonotes.model.dto.res.TodoResDTO;
 
 public interface ITodoCommandService {
     TodoResDTO create(TodoReqDTO reqDTO);
-    void update(TodoReqDTO todoReqDTO, Long id);
+    TodoResDTO update(TodoReqDTO todoReqDTO, Long id);
     void delete(Long id);
 }

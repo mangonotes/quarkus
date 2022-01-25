@@ -10,8 +10,7 @@ public class TaskEntity extends  BaseEntity<Long>{
     @Column(columnDefinition = "TEXT")
     private String description;
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId
-    private TodoEntity todo;
+   private TodoEntity todo;
 
     public TodoEntity getTodo() {
         return todo;
@@ -46,6 +45,7 @@ public class TaskEntity extends  BaseEntity<Long>{
 
         return this.getId() != null ? this.getId().equals(that.getId()) : that.getId() == null;
     }
+
 
     @Override
     public int hashCode() {

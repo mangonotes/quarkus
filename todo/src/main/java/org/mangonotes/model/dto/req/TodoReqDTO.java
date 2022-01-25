@@ -25,4 +25,11 @@ public class TodoReqDTO  extends TodoBaseDTO {
         this.tasks = tasks;
     }
 
+    @Override
+    public String toString() {
+
+        return  "TodoReqDTO{" + super.toString() +
+                "tasks=" + tasks +
+                '}';
+    }
 }

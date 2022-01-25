@@ -16,6 +16,13 @@ public class BaseEntity<PK extends java.io.Serializable> {
     @Column(name="modified_date")
     private LocalDateTime modifiedDate;
 
+    public void setId(PK id) {
+        this.id = id;
+        if (id != null){
+            isNew=false;
+        }
+    }
+
     public boolean isNew() {
         return isNew;
     }
