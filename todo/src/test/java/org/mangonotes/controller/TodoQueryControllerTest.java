@@ -15,6 +15,7 @@ import org.mangonotes.services.todo.ITodoCommandService;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 
@@ -42,20 +43,21 @@ class TodoQueryControllerTest {
         taskReqDTO.setName("test");
         List<TaskReqDTO> taskReqDTOList= List.of(taskReqDTO);
         todoReqDTO.setTasks(taskReqDTOList);
-       // cleanup();
+        entityManager.setFlushMode(FlushModeType.AUTO);
+       cleanup();
 
 
     }
-
+    @Transactional
     public void cleanup(){
         Query query= entityManager.createQuery("from TodoEntity");
+
         query.getResultList().forEach(entity-> entityManager.remove(entity));
     }
     @Test
     @Order(1)
     @Transactional
     void getAllWithoutData() {
-        cleanup();
         TodoResDTO[] actual =  given().get("/todos")
                 .then()
                 .log().body()
@@ -66,11 +68,10 @@ class TodoQueryControllerTest {
     @Test
     @Order(2)
     void findById_NotFind() {
-        cleanup();
         String  type =  given().get("/todos/10")
                 .then()
                 .log().all()
-                .statusCode(400)
+                .statusCode(404)
                 .extract().path("type");
         assertEquals(ErrorType.ITEM_NOT_FOUND.name(), type);
     }
@@ -78,18 +79,7 @@ class TodoQueryControllerTest {
     @Test
 @Order(3)
     void findById() {
-    TodoResDTO create =
-            given()
-                    .contentType(ContentType.JSON)
-                    .body(todoReqDTO)
-                    .when()
-                    .post("/todos")
-                    .then()
-                    .log().body()
-                    .statusCode(201)
-                    .extract().response().as(TodoResDTO.class);
-
-      System.out.println("find by id id " + create.getId());
+     TodoResDTO create= queryService.create(todoReqDTO);
         TodoResDTO  resDTO =  given().get("/todos/"+ create.getId())
                 .then()
                 .log().all()
@@ -101,7 +91,7 @@ class TodoQueryControllerTest {
     @Order(4)
     @Test
     void getAllWithData() {
-        queryService.create(todoReqDTO);
+      TodoResDTO resDTO=  queryService.create(todoReqDTO);
         TodoResDTO[] actual =  given().get("/todos")
                 .then()
                 .log().body()

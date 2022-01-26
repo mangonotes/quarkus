@@ -135,7 +135,7 @@ class TodoCommandControllerTest {
                 .delete("/todos/" + create.getId())
                 .then()
                 .log().body()
-                .statusCode(400)
+                .statusCode(404)
                 .extract().path("type");
      assertEquals(errorType, ErrorType.ITEM_NOT_FOUND.name());
     }
@@ -286,7 +286,7 @@ class TodoCommandControllerTest {
                         .put("/todos/"+ create.getId())
                         .then()
                         .log().body()
-                        .statusCode(400)
+                        .statusCode(404)
                         .extract().path("type");
         assertEquals(type , ErrorType.ITEM_NOT_FOUND.name());
     }
